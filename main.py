@@ -18,7 +18,9 @@ tweets_df = read_twitter_json(r'C:\twitter\data\tweets.js')
 
 # Function to remove URLs from a string
 def remove_urls(text):
-    return re.sub(r"https?://\S+", "", text)
+    cleaned_text = re.sub(r"https?://\S+", "", text)  # Remove URLs
+    cleaned_text = cleaned_text.replace("\n", " ")  # Remove newlines
+    return cleaned_text
 
 
 # Iterate through each tweet in the DataFrame
@@ -39,4 +41,4 @@ for _, tweet in tweets_df.iterrows():
         cleaned_full_text = remove_urls(tweet_data['full_text'])
 
         # Print the cleaned "full_text" of the tweet
-        print(cleaned_full_text)
+        print('here:', cleaned_full_text)
