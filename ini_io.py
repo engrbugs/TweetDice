@@ -1,5 +1,6 @@
 import configparser
 
+
 def save_history_to_config(history, file_path):
     history_config = configparser.ConfigParser()
     if not history_config.has_section('History'):
@@ -24,4 +25,7 @@ def read_secret_config():
     my_user_id = secret_config.get('Secret', 'user_id')
     my_twitter_data_path = secret_config.get('Secret', 'twitter_data_path')
     history_file = secret_config.get('Secret', 'history_file')
-    return my_user_id, my_twitter_data_path, history_file
+    creator_temp_path = secret_config.get('Secret', 'creator_temp_folder_path')
+    scene_prompt_file = secret_config.get('Secret', 'scene_prompt_file')
+    hashtags_prompt_file = secret_config.get('Secret', 'hashtags_prompt_file')
+    return my_user_id, my_twitter_data_path, history_file, creator_temp_path, scene_prompt_file, hashtags_prompt_file

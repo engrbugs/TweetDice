@@ -13,13 +13,15 @@ import os
 import clipboard as cp
 import webbrowser
 import config
+import file_io
 
 from cool_console import cool_print_cyan, cool_print_green, cool_progress_bar
 from ini_io import save_history_to_config, retrieve_history_from_config, read_secret_config
 from randomizer import generate_new_random
 
 # Read sensitive information from secret.ini
-my_user_id, my_twitter_data_path, history_file = read_secret_config()
+(my_user_id, my_twitter_data_path, history_file, creator_temp_path, scene_prompt_file,
+ hashtags_prompt_file) = read_secret_config()
 
 # List to store all the cleaned full_text values
 total_tweets = []
@@ -30,16 +32,16 @@ history_ini_path = os.path.join(script_directory, history_file)
 # Retrieve the list of history numbers from the config
 history_numbers = retrieve_history_from_config(history_ini_path)
 
+# create a folder if not exists
+if not os.path.exists(creator_temp_path):
+    os.makedirs(creator_temp_path)
+
 
 def read_twitter_json(file_name):
     with open(file_name, "r", encoding="utf-8") as tweets_file:
         tweets_data = '[' + ''.join(tweets_file.readlines()[1:])  # Replace the entire first line with '['
         tweets_js = json.loads(tweets_data)
     return pd.DataFrame(tweets_js)
-
-
-# Correct file path
-tweets_df = read_twitter_json(my_twitter_data_path)
 
 
 # Function to remove URLs from a string
@@ -55,16 +57,9 @@ def process_tweets(tweets_df, history_numbers):
         if tweet_meets_criteria(tweet_data):
             cleaned_full_text = remove_urls(tweet_data['full_text'])
             total_tweets.append(cleaned_full_text)
-
-    cool_progress_bar(21)
-
     total_tweet_count = len(total_tweets)
     new_random, random_tweet = get_random_tweet(history_numbers, total_tweet_count)
-
-    cool_print_cyan(f"Total Tweets: {total_tweet_count}")
-    cool_print_cyan(f"Random Tweet Index: {new_random + 1}")
-    cool_print_green('Random Tweet: ' + random_tweet)
-    return random_tweet
+    return total_tweet_count,new_random + 1,random_tweet
 
 
 def tweet_meets_criteria(tweet_data):
@@ -95,24 +90,58 @@ def get_random_tweet(history_numbers_sub, total_tweet_count):
 
 if __name__ == '__main__':
     # I want to put here all the Outputs. So that. all the console should be here.
+    cool_print_cyan('Welcome to TweetStory! v' + config.version + '  ٩(◕‿◕)و✧')
+    time.sleep(.5)
+    cool_print_green(file_io.extract_last_folder_and_filename(my_twitter_data_path))
+    cool_print_green(str(file_io.get_file_info(my_twitter_data_path)))
 
-    tweet = process_tweets(tweets_df, history_numbers)
+    # Read the twitter json file
+    tweets_df = read_twitter_json(my_twitter_data_path)
+
+    cool_progress_bar(21)
+    total_tweet_count, random_index, tweet = process_tweets(tweets_df, history_numbers)
+    cool_print_cyan(f"Total Tweets: {total_tweet_count}")
+    cool_print_cyan(f"Random Tweet Index: {random_index}")
+    cool_print_green('Random Tweet: ' + tweet)
+
+    # delete the content of the temp folder
+    file_io.delete_folder_content(creator_temp_path)
+    cool_print_green('Deleted the content of the temp folder!')
+    # write the tweet to a text
+    file_io.write_to_txt(creator_temp_path + '/tweet.txt', tweet)
+    cool_print_green('Wrote the tweet to a text file!')
+
+
+    cp.copy_to_clipboard(creator_temp_path)
+    subprocess.Popen(f'explorer "{creator_temp_path}"', shell=True)
+    cool_print_green('Copied the temp folder path to clipboard and opened it!')
 
 
     # copy the tweet to clipboard.
     cp.copy_to_clipboard(tweet)
     cool_print_green('🎉 Boom! Random tweet successfully snatched and copied onto my clipboard! 🎉')
 
+    time.sleep(.5)
+    # open PlayHT TTS website
+    webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
+    cool_print_green('Now paste the tweet into the PlayHT TTS text box and click "Generate TTS"!')
+
+    print("Have you save your audio file in the temp folder? [Press ENTER to continue]", end=">     ")
+    input().strip()
+
+
+    time.sleep(.5)
+    scene_prompt_path = os.path.join(script_directory, scene_prompt_file)
+    scene_prompt = file_io.read_from_txt(scene_prompt_path)
+    cp.copy_to_clipboard(scene_prompt+tweet)
+    cool_print_green('paste to CHTGPT prompt box for a scene')
+
+
     # open chatgpt website
     webbrowser.open("https://chat.openai.com/")
     cool_print_green('Blasting off to the ChatGPT galaxy! Prepare for an epic conversation!')
 
-    time.sleep(.5)
-    # open PlayHT TTS website
-    webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
-    cool_print_green('Blasting off to the ChatGPT galaxy! Prepare for an epic conversation!')
-
-    print("What scene do you have in mind? ", end=">     ")
+    print("Do you have scene in mind now? Type it here: ", end=">     ")
     scene = input().strip()
 
     time.sleep(.5)
@@ -125,6 +154,14 @@ if __name__ == '__main__':
     os.system(r'start explorer shell:appsfolder\Clipchamp.Clipchamp_yxz26nhyzhsrt!App')
 
     time.sleep(.5)
+    hashtags_prompt_path = os.path.join(script_directory, hashtags_prompt_file)
+    hashtags_prompt = file_io.read_from_txt(scene_prompt_path)
+    cp.copy_to_clipboard(scene_prompt+tweet)
+    cool_print_green('paste to CHTGPT prompt box for a hastags')
+    hastags = input().strip()
 
-    # open DaVinci Resolve
-    process = subprocess.Popen([r"C:\Program Files\Blackmagic Design\DaVinci Resolve\Resolve.exe"])
+    # I'll try no to use DaVinci first.
+    # time.sleep(.5)
+    # # open DaVinci Resolve
+    # process = subprocess.Popen([r"C:\Program Files\Blackmagic Design\DaVinci Resolve\Resolve.exe"])
+
