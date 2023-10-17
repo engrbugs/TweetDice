@@ -19,9 +19,10 @@ from cool_console import cool_print_cyan, cool_print_green, cool_progress_bar
 from ini_io import save_history_to_config, retrieve_history_from_config, read_secret_config
 from randomizer import generate_new_random
 
+
 # Read sensitive information from secret.ini
 (my_user_id, my_twitter_data_path, history_file, creator_temp_path, scene_prompt_file,
- hashtags_prompt_file) = read_secret_config()
+ hashtags_prompt_file, creator_hashtags_prompt_file) = read_secret_config()
 
 # List to store all the cleaned full_text values
 total_tweets = []
@@ -123,6 +124,9 @@ if __name__ == '__main__':
 
     time.sleep(.5)
     # open PlayHT TTS website
+    # Larry v1.0
+    # webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
+    # Barry (Australian v2.0)
     webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
     cool_print_green('Now paste the tweet into the PlayHT TTS text box and click "Generate TTS"!')
 
@@ -152,16 +156,29 @@ if __name__ == '__main__':
     # start Clipchamp app
     time.sleep(.5)
     os.system(r'start explorer shell:appsfolder\Clipchamp.Clipchamp_yxz26nhyzhsrt!App')
+    cool_print_green('Opened Clipchamp app! 🎉')
 
     time.sleep(.5)
     hashtags_prompt_path = os.path.join(script_directory, hashtags_prompt_file)
-    hashtags_prompt = file_io.read_from_txt(scene_prompt_path)
-    cp.copy_to_clipboard(scene_prompt+tweet)
-    cool_print_green('paste to CHTGPT prompt box for a hastags')
-    hastags = input().strip()
+    hashtags_prompt = file_io.read_from_txt(hashtags_prompt_path)
+    time.sleep(.5)
+    creator_hashtags_prompt_path = os.path.join(script_directory, creator_hashtags_prompt_file)
+    creator_hashtags_prompt = file_io.read_from_txt(creator_hashtags_prompt_path)
+    cp.copy_to_clipboard(hashtags_prompt+tweet)
+    cool_print_green('paste to CHTGPT prompt box for hashtags')
+    hashtags = input().strip()
+    hashtags += creator_hashtags_prompt
+    cp.copy_to_clipboard(hashtags)
+    cool_print_green('copied to clipboard the complete hashtags')
 
     # I'll try no to use DaVinci first.
     # time.sleep(.5)
     # # open DaVinci Resolve
     # process = subprocess.Popen([r"C:\Program Files\Blackmagic Design\DaVinci Resolve\Resolve.exe"])
+
+    for website in config.upload:
+        time.sleep(0.5)
+        webbrowser.open(website)
+    cool_print_green('🚀 Let the uploading adventure begin! Enjoy uploading! 🚀')
+
 

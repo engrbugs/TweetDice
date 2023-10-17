@@ -28,4 +28,6 @@ def read_secret_config():
     creator_temp_path = secret_config.get('Secret', 'creator_temp_folder_path')
     scene_prompt_file = secret_config.get('Secret', 'scene_prompt_file')
     hashtags_prompt_file = secret_config.get('Secret', 'hashtags_prompt_file')
-    return my_user_id, my_twitter_data_path, history_file, creator_temp_path, scene_prompt_file, hashtags_prompt_file
+    creator_hashtags_prompt_file = secret_config.get('Secret', 'creator_hashtags_prompt_file')
+    return (my_user_id, my_twitter_data_path, history_file, creator_temp_path, scene_prompt_file,
+            hashtags_prompt_file, creator_hashtags_prompt_file)
