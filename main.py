@@ -127,10 +127,10 @@ if __name__ == '__main__':
     # Larry v1.0
     # webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
     # Barry (Australian v2.0)
-    webbrowser.open("https://play.ht/studio/files/c70cb3c4-653e-4f60-a3e8-bb9b66bf803d")
+    webbrowser.open("https://play.ht/studio/files/4647aa7e-edab-4932-b40b-3d582592ad53")
     cool_print_green('Now paste the tweet into the PlayHT TTS text box and click "Generate TTS"!')
 
-    print("Have you save your audio file in the temp folder? [Press ENTER to continue]", end=">     ")
+    print("Hnave you save your audio file in the temp folder? [Press ENTER to continue]", end=">     ")
     input().strip()
 
 
